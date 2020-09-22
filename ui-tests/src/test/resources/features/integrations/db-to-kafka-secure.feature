@@ -5,7 +5,6 @@
 @datamapper
 @kafka
 @integrations-db-to-kafka-to-db-secure
-@ENTESB-13113
 Feature: Integration - DB to DB
 
   Background: Clean application state
