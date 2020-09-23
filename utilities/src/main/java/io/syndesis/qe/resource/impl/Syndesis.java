@@ -550,6 +550,15 @@ public class Syndesis implements Resource {
             // set the route
             crJson.getJSONObject("spec").put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
 
+            //workaround for ENTESB-14768
+            undeployCustomResources();
+            try {
+                OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isUndeployed(), 10 * 60000L);
+            } catch (TimeoutException | InterruptedException e) {
+                InfraFail.fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
+            }
+
+
             createCr(crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
