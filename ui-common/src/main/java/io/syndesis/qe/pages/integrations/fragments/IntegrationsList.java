@@ -15,6 +15,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -80,8 +81,12 @@ public class IntegrationsList extends RowList {
 
     public String getStartingStatus(SelenideElement item) {
         String text = item.$(Element.STARTING_STATUS).shouldBe(visible).getText().trim();
+        log.info("Starting status text is: " + text);
         if (!text.contains("Starting...") || text.contains("Stopping...")) {
-            text = item.$(Element.STARTING_STATUS_WITH_PROGRESS_BAR).shouldBe(visible).getText().trim();
+            SelenideElement progressBar = item.$(Element.STARTING_STATUS_WITH_PROGRESS_BAR);
+            if (progressBar.exists()) {
+                text = progressBar.getText().trim();
+            }
         }
         return text;
     }
