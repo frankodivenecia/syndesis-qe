@@ -527,6 +527,14 @@ public class Syndesis implements Resource {
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 10)
             .waitFor();
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.binary().execute("get", "syndesis").contains("app"));
+            OpenShiftUtils.binary().execute("delete", "syndesis", "app");
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().pods().list().getItems().stream().allMatch(p -> p.getMetadata().getName().contains("operator")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void deploySyndesisViaOperator() {
